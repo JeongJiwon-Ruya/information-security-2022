@@ -18,11 +18,11 @@ WHEELS = {
         "turn": 16
     },
     "II": {
-        "wire": "AJDKSIRUXBLHWTMCQGZNPYFVOE",
+        "wire": "AJDKSIRUXBLHWTMCQGZNPYFVOE", # A -> A, B -> J, C -> D. K에서 S로 이동시 회전
         "turn": 4
     },
     "III": {
-        "wire": "BDFHJLCPRTXVZNYEIWGAKMUSQO",
+        "wire": "BDFHJLCPRTXVZNYEIWGAKMUSQO", # A -> B, B -> D, C -> F. K에서 M으로 이동시 회전 
         "turn": 21
     }
 }
@@ -42,7 +42,7 @@ SETTINGS = {
     "PLUGBOARD": []
 }
 
-def apply_settings(ukw, wheel, wheel_pos, plugboard):
+def apply_settings(ukw, wheel, wheel_pos, plugboard): #입력값 할당
     if not ukw in UKW:
         raise ArgumentError(f"UKW {ukw} does not exist!")
     SETTINGS["UKW"] = UKW[ukw]
