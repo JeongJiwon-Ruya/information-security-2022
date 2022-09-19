@@ -14,7 +14,7 @@ ETW = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 WHEELS = {
     "I" : {
-        "wire": "EKMFLGDQVZNTOWYHXUSPAIBRCJ", # A -> E, B -> K, C -> M. H에서 X로 이동시 회전
+        "wire": "EKMFLGDQVZNTOWYHXUSPAIBRCJ", # A -> E, B -> K, C -> M. 이친구의 노치는 16번에 있다
         "turn": 16
     },
     "II": {
@@ -87,9 +87,12 @@ def pass_wheels(input, reverse = False):
     # Keep in mind that reflected signals pass wheels in reverse order
     # reverse = false일때 왼쪽 -> 오른쪽 순서로 읽음.
     if reverse :
-        input = SETTINGS["WHEELS"][0]["wire"][(ord(input) + SETTINGS["WHEEL_POS"][0] - ord('A')) % 26]
-        input = SETTINGS["WHEELS"][1]["wire"][(ord(input) + SETTINGS["WHEEL_POS"][1] - ord('A')) % 26]
-        input = SETTINGS["WHEELS"][2]["wire"][(ord(input) + SETTINGS["WHEEL_POS"][2] - ord('A')) % 26]
+        for j in range(0,3) :
+            for i in range(0,26) :
+                if input == SETTINGS["WHEELS"][j]["wire"][(i + SETTINGS["WHEEL_POS"][j]) % 26] :
+                    input = chr(ord('A') + i)
+                    break
+
     else :
         input = SETTINGS["WHEELS"][2]["wire"][(ord(input) + SETTINGS["WHEEL_POS"][2] - ord('A')) % 26]
         input = SETTINGS["WHEELS"][1]["wire"][(ord(input) + SETTINGS["WHEEL_POS"][1] - ord('A')) % 26]
@@ -106,16 +109,11 @@ def rotate_wheels():
     # Implement Wheel Rotation Logics
     # 글자 입력할때마다 한번씩 돎.
     # 각 wheel마다 notch가 존재. 해당 turn index에 해당하는 알파벳이 catch에 설정된 상태로 글자를 입력하게 되면, 다음 로터가 돌게 됨.
-    # print("In")
-    # print(SETTINGS["WHEEL_POS"][2])
     SETTINGS["WHEEL_POS"][2] = (SETTINGS["WHEEL_POS"][2] + 1) % 26
-    # print(SETTINGS["WHEEL_POS"][2])
-    # print(" ==> ", SETTINGS["WHEELS"][2]["turn"])
+
     if SETTINGS["WHEEL_POS"][2] == SETTINGS["WHEELS"][2]["turn"]:
-        print("Turn1")
         SETTINGS["WHEEL_POS"][1] == (SETTINGS["WHEEL_POS"][1] + 1) % 26
     if SETTINGS["WHEEL_POS"][1] == SETTINGS["WHEELS"][1]["turn"]:
-        print("Turn2")
         SETTINGS["WHEEL_POS"][0] == (SETTINGS["WHEEL_POS"][0] + 1) % 26
     pass
 
