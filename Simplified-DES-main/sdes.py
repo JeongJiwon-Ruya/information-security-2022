@@ -77,7 +77,7 @@ def schedule_keys(key: bitarray) -> list[bitarray]:
             round_key.append(merge_permutation[j])
 
         round_keys.append(round_key)
-
+        
     return round_keys
 
 '''
@@ -117,8 +117,30 @@ mode determines that this function do encryption or decryption.
      MODE_ENCRYPT or MODE_DECRYPT available.
 '''
 def sdes(text: bitarray, key: bitarray, mode) -> bitarray:
-    result = bitarray()
     
+    inputBit = bitarray()
+
+    subkeys = schedule_keys(key)
+    # IP에 주어진 text를 넣어서 치환한다.
+    for i in IP:
+        inputBit.append(text[i])
+    
+    # round함수는 MODE_ENCRYPT일때 subkeys[0] -> subkeys[1] 순으로 사용하고, MODE_DECRYPT일때 subkeys[1] -> subkeys[0] 순으로 사용한다.
+    
+    # 첫번째 라운드를 통과시킬때에는 최종적으로 왼쪽 4비트와 오른쪽 4비트의 위치를 switch해주어야 한다.
+    # 기존의 오른쪽 4비트는 왼쪽에, (기존의 왼쪽 4비트) XOR (보조키를 인자로 round함수를 통과한 오른쪽의 4비트)의 값은 오른쪽에 배치한다. (switch)
+    inputBit = inputBit[:4] + (inputBit[4:] ^ round(inputBit[:4], subkeys[0] if (mode == MODE_ENCRYPT) else subkeys[1]))
+
+    # 마지막 라운드는 왼쪽 비트와 오른쪽 비트의 위치를 switch하지 않는다.
+    # (기존의 왼쪽4비트) XOR (보조키를 인자로 round함수를 통과한 오른쪽의 4비트)의 값은 왼쪽에 배치하고, 기존의 오른쪽4비트는 그대로 둔다. 
+    inputBit = (inputBit[4:] ^ round(inputBit[:4], subkeys[0] if (mode == MODE_ENCRYPT) else subkeys[1])) + inputBit[:4]
+
+    result = bitarray()
+
+    # IP_1에 result를 넣어서 치환한다.
+    for i in IP_1:
+        result.append(inputBit[i])
+
     # Place your own implementation of S-DES Here
     
     return result
@@ -126,7 +148,9 @@ def sdes(text: bitarray, key: bitarray, mode) -> bitarray:
 #### DES Sample Program Start
 
 plaintext = input("[*] Input Plaintext in Binary (8bits): ")
+
 key = input("[*] Input Key in Binary (10bits): ")
+
 
 # Plaintext must be 8 bits and Key must be 10 bits.
 if len(plaintext) != 8 or len(key) != 10:
