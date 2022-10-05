@@ -21,10 +21,12 @@ class Receiver(Thread):
     def decrypt(self, ciphertext:bytes) -> bytes:
         # place your own implementation of
         # AES-128-ECB decryption with pycryptodome
+        
+        key = ENCRYPTION_KEY
+        cipher = AES.new(key, AES.MODE_ECB)
 
-        plaintext = self.decrypt(ciphertext)
+        plaintext = cipher.decrypt(ciphertext)
         returnText = unpad(plaintext, BLOCK_SIZE)
-
         return returnText
 
     def handle_recv(self, received:bytes):
