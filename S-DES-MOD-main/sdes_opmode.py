@@ -4,8 +4,10 @@
 # This code requires "bitarray" package.
 # Install with: pip install bitarray
 
+from asyncio import _unregister_task
 from ctypes import ArgumentError
 import re, random
+#from sqlite3.dbapi2 import _SingleParamWindowAggregateClass
 from bitarray import bitarray, util as ba_util
 
 # Initial Permutation (IP)
@@ -148,19 +150,34 @@ def sdes(text: bitarray, key: bitarray, mode) -> bitarray:
 
 
 def sdes_encrypt_ecb(text: bitarray, key: bitarray):
-    pass
+    result = bitarray()
+    for i in range(0, int(len(text) / 8)):
+        result += sdes(text[i*8: (i+1)*8], key, MODE_ENCRYPT)
+    return result
 
 def sdes_decrypt_ecb(ciphertext: bitarray, key: bitarray):
-    pass
+    result = bitarray()
+    for i in range(0, int(len(ciphertext) / 8)):
+        result += sdes(ciphertext[i*8: (i+1)*8], key, MODE_DECRYPT)
+    return result
 
 def sdes_encrypt_cbc(text: bitarray, key: bitarray, iv:bitarray):
-    pass
+    resultBefore = iv[0:8]
+    result = bitarray()
+    for i in range(0, int(len(text)/8)):
+        result += sdes((text[i*8: (i+1)*8]) ^ resultBefore, key, MODE_ENCRYPT)
+        resultBefore = result[i*8: (i+1)*8]
+    return result
 
 def sdes_decrypt_cbc(ciphertext: bitarray, key: bitarray, iv:bitarray):
-    pass
+    resultBefore = iv[0:8]
+    result = bitarray()
+    for i in range(0, int(len(ciphertext) / 8)):
+        result += sdes((ciphertext[i*8: (i+1)*8]), key, MODE_DECRYPT) ^ resultBefore
+        resultBefore = ciphertext[i*8: (i+1)*8]
+    return result
 
 #### DES Sample Program Start
-
 plaintext = input("[*] Input Plaintext in Binary: ")
 key = input("[*] Input Key in Binary (10bits): ")
 
