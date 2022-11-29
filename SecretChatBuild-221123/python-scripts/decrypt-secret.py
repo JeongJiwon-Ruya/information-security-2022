@@ -10,6 +10,10 @@ def read_from_base64():
 
 def decrypt_secret(secret, priKey):
     # PKCS#1 OAEP를 이용한 RSA 복호화 구현
+    key = RSA.importKey(priKey)
+    cipher = PKCS1_OAEP.new(key)
+    message = cipher.decrypt(secret)
+    return base64.b64encode(message)
 
 [secret, prikey] = read_from_base64()
 result = decrypt_secret(secret, prikey).decode('ascii')

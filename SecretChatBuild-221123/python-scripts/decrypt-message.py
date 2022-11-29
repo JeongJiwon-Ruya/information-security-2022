@@ -1,3 +1,4 @@
+from tokenize import PlainToken
 from Crypto.Util.Padding import unpad
 from Crypto.Cipher import AES
 import base64
@@ -10,6 +11,8 @@ def read_from_base64():
 
 def decrypt_message(key, iv, message):
     # AES 256 암호화 구현
+    cipher = AES.new(key, AES.MODE_EAX, iv)
+    return cipher.decrypt(message)
 
 [secretkey, iv, message] = read_from_base64()
 
